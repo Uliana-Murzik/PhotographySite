@@ -1,70 +1,198 @@
-# .
+# Фото-портфолио ретушёра (Vue 3 + Vite)
 
-This template should help get you started developing with Vue 3 in Vite.
+Проект — одностраничный сайт-портфолио ретушёра с галереей работ, статическими страницами и скрытой админ‑страницей
+для владельца.
 
-## Recommended IDE Setup
+Основные задачи:
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Навигация**: шапка с именем, подзаголовком «Ретушер» и меню
+  - **Услуги** (`/services`)
+  - **Галерея** (`/gallery`)
+  - **Онлайн‑курсы** (`/courses`)
+  - **Обо мне** (`/about`)
+  - **Контакты** (`/contacts`)
+- **Скрытая админ‑страница** `/admin` для владельца (не отображается в навигации)
+- **Загрузка фотографий** в галерею через админку (хранение в `localStorage`)
+- **Базовая защита** картинок от скачивания (отключение контекстного меню, запрет drag‑n‑drop, невидимый оверлей)
 
-## Recommended Browser Setup
+---
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Запуск проекта
 
 ```sh
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Проект поднимется на `http://localhost:5173` (адрес может отличаться, см. вывод Vite в терминале).
+
+Сборка продакшн‑версии:
 
 ```sh
 npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+Запуск unit‑тестов:
 
 ```sh
 npm run test:unit
 ```
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+---
 
-```sh
-npm run test:e2e:dev
+## Архитектура проекта
+
+### Основные директории
+
+- **`src/main.ts`**: точка входа, создание приложения Vue, подключение `Pinia` и роутера.
+- **`src/App.vue`**: корневой layout сайта:
+  - подключает шапку `SiteHeader`;
+  - отображает текущую страницу через `<RouterView />`;
+  - навешивает глобальную защиту от контекстного меню и части горячих клавиш сохранения.
+- **`src/router/index.ts`**: маршруты приложения.
+- **`src/components/layout/SiteHeader.vue`**: шапка + navigation bar.
+- **`src/views/*.vue`**: отдельные страницы сайта.
+- **`src/stores/gallery.ts`**: `Pinia`‑store для галереи с сохранением в `localStorage`.
+- **`env.d.ts`**: типы для `import.meta.env` (в т.ч. `VITE_ADMIN_PASSWORD`).
+
+### Страницы (`src/views`)
+
+- **`HomePage.vue`** (`/`)
+  - Главный визуальный блок с большой фотографией.
+- **`ServicesPage.vue`** (`/services`)
+  - Блок с описанием основных услуг (примерные пакеты).
+- **`GalleryPage.vue`** (`/gallery`)
+  - Отображает фотографии из стора галереи `useGalleryStore`.
+  - Если фотографий нет, показывает подсказку, что владелец может загрузить их в админке.
+- **`CoursesPage.vue`** (`/courses`)
+  - Заглушка под будущее описание онлайн‑курсов.
+- **`AboutPage.vue`** (`/about`)
+  - Текст «Обо мне».
+- **`ContactsPage.vue`** (`/contacts`)
+  - Список контактов (email, Instagram, Telegram и т.п.).
+- **`AdminPage.vue`** (`/admin`)
+  - Скрытая страница для владельца (нет ссылки в навигации).
+  - Содержит форму входа по паролю и интерфейс загрузки фотографий в галерею.
+
+Маршрут по умолчанию (`/:pathMatch(.*)*`) переадресует на `/`.
+
+### Шапка и навигация
+
+Компонент `SiteHeader` отвечает только за layout и навигацию:
+
+- отображает имя и подпись «Ретушер»;
+- генерирует меню по массиву конфигурации (KISS, без лишней логики);
+- активный пункт выделяется более жирным шрифтом (через `route.name`).
+
+---
+
+## Галерея и админ‑раздел
+
+### Store галереи (`src/stores/gallery.ts`)
+
+`useGalleryStore` реализует простое хранилище фотографий:
+
+- **Состояние**:
+  - `photos: GalleryPhoto[]`, где `GalleryPhoto` содержит `id`, `dataUrl`, `title`, `createdAt`.
+- **Функции**:
+  - `addPhoto(dataUrl: string, title?: string)` — добавляет фото и сразу сохраняет массив в `localStorage`.
+  - `removePhoto(id: string)` — удаляет фото по `id`.
+  - `clear()` — очищает галерею.
+- **Персистентность**:
+  - при инициализации store читает данные из `localStorage` (`galleryPhotos`);
+  - при каждом изменении записывает JSON обратно в `localStorage`.
+
+Это упрощённая версия реального бэкенда: фотографии хранятся в браузере текущего пользователя.
+
+### Страница галереи (`GalleryPage.vue`)
+
+- Подписывается на `photos` через `storeToRefs`.
+- Отображает сетку из `<img>` с небольшими карточками.
+- На каждый элемент накладывается прозрачный оверлей и отключаются `pointer-events` — это затрудняет
+  сохранение изображения через контекстное меню/drag‑n‑drop.
+
+### Скрытая админка (`AdminPage.vue`)
+
+- Доступна по прямому адресу `/admin` (нет ссылки в меню).
+- Логика авторизации:
+  - пароль берётся из `import.meta.env.VITE_ADMIN_PASSWORD`;
+  - если переменная не задана, используется дефолт `admin123` (для локальной разработки);
+  - после успешного ввода пароля флаг авторизации сохраняется в `localStorage` (`isAdmin = "true"`).
+- Интерфейс:
+  - форма ввода пароля + кнопка «Войти»;
+  - после входа — форма выбора файлов (`input[type=file]` с `multiple`);
+  - файлы читаются через `FileReader` как `data:`‑URL и добавляются в `useGalleryStore`.
+- Просмотр:
+  - мини‑превью загруженных фотографий внутри админки.
+
+> ⚠️ **Важно:** авторизация реализована только на фронтенде и рассчитана на учебный/локальный проект.
+> В реальном продакшене нужно перенести проверку пароля и хранение файлов на сервер.
+
+---
+
+## Переменные окружения и пароль админа
+
+Создайте файл `.env` в корне проекта (рядом с `package.json`) на основе `.env.example`:
+
+```env
+VITE_ADMIN_PASSWORD=мой-секретный-пароль
 ```
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+Затем перезапустите дев‑сервер (`npm run dev`), чтобы Vite подхватил переменные окружения.
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+Типы для `VITE_ADMIN_PASSWORD` описаны в `env.d.ts`.
 
-```sh
-npm run build
-npm run test:e2e
-```
+---
 
-### Lint with [ESLint](https://eslint.org/)
+## Защита изображений от скачивания и скриншотов
 
-```sh
-npm run lint
-```
+> ⚠️ **Важно:** Полностью запретить скачивание и скриншоты на фронтенде **технически невозможно**.
+> Пользователь всегда может сделать снимок экрана средствами ОС (Print Screen, Snipping Tool, скриншот
+> через macOS и т.д.). Реализованные меры **усложняют процесс**, но не блокируют его полностью.
+
+В проекте реализованы следующие меры защиты:
+
+### JavaScript-защита (`App.vue`):
+
+- **Блокировка контекстного меню** (`contextmenu`) на всём окне
+- **Блокировка горячих клавиш**:
+  - `Ctrl/Cmd + S` (сохранение страницы)
+  - `Ctrl/Cmd + P` (печать)
+  - `Print Screen` (частично работает, зависит от браузера)
+  - `F12` (открытие DevTools)
+  - `Ctrl/Cmd + Shift + I/J/C` (различные способы открытия DevTools)
+  - `Ctrl/Cmd + U` (просмотр исходного кода)
+- **Блокировка копирования** через буфер обмена (`copy` event)
+- **Блокировка выделения текста** (кроме полей ввода)
+- **Обнаружение открытия DevTools** через изменение размеров окна (с предупреждением в консоли)
+
+### CSS-защита:
+
+- **Запрет выделения текста**: `user-select: none` на всём сайте (кроме `input`/`textarea`)
+- **Запрет drag-and-drop**: `user-drag: none` на всех элементах
+- **Для картинок в галерее и на главной**:
+  - `user-select: none`, `-webkit-user-drag: none`, `pointer-events: none`
+  - поверх изображения накладывается прозрачный `div`‑оверлей
+
+### Ограничения:
+
+- Системные инструменты скриншотов (Print Screen, Snipping Tool) работают на уровне ОС и их нельзя заблокировать через JavaScript
+- DevTools можно открыть через меню браузера, даже если заблокированы горячие клавиши
+- Любой контент, отображаемый в браузере, технически доступен пользователю
+
+Эти меры соответствуют принципам **KISS** и дают базовый уровень защиты от случайного сохранения и
+копирования контента, но не являются абсолютной защитой.
+
+---
+
+## Стиль кода и практики
+
+- **KISS**: минимум абстракций — только то, что нужно (layout, роутер, один store для галереи).
+- **Чистота кода**:
+  - именованные компоненты и сторы по назначению (`SiteHeader`, `GalleryPage`, `useGalleryStore`);
+  - понятные имена переменных и функций (`handleLogin`, `handleFilesChange`).
+- **REST‑подход** (на уровне фронтенда):
+  - маршруты читаемые и ресурсно‑ориентированные (`/gallery`, `/services`, `/courses`).
+
+Если захочется развивать проект, следующими шагами могут быть подключение настоящего бэкенда для
+загрузки файлов и выделение отдельных модулей для работы с API.
