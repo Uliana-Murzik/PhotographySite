@@ -4,7 +4,7 @@
   <section class="page">
     <h2 class="page__title">Контакты</h2>
     <p class="page__subtitle">
-      Оставьте здесь ссылки на Instagram, Telegram, почту и другие способы связи.
+      Пу пу пу
     </p>
 
     <ul class="contacts-list">

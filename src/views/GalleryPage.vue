@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useGalleryStore } from '@/stores/gallery'
+import { useGalleryStore } from '../stores/gallery'
 
 const galleryStore = useGalleryStore()
 const { photos } = storeToRefs(galleryStore)
@@ -12,15 +12,12 @@ const { photos } = storeToRefs(galleryStore)
     <p class="page__subtitle">Подборка работ с акцентом на свет, цвет и аккуратную ретушь.</p>
 
     <div v-if="!photos.length" class="page__empty">
-      Пока здесь нет фотографий. Владелец сайта может загрузить их на скрытой странице администратора.
+      Пока здесь нет фотографий. Владелец сайта может загрузить их на скрытой странице
+      администратора.
     </div>
 
     <div v-else class="gallery-grid">
-      <article
-        v-for="photo in photos"
-        :key="photo.id"
-        class="gallery-grid__item"
-      >
+      <article v-for="photo in photos" :key="photo.id" class="gallery-grid__item">
         <div class="gallery-grid__image-wrapper">
           <img
             :src="photo.dataUrl"
@@ -81,7 +78,7 @@ const { photos } = storeToRefs(galleryStore)
   user-select: none;
   -webkit-user-select: none;
   -webkit-user-drag: none;
-  pointer-events: none; /* усложняем сохранение картинки через клик */
+  pointer-events: none;
 }
 
 .gallery-grid__overlay {

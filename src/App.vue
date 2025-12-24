@@ -55,21 +55,11 @@ const handleSelectStart = (event: Event) => {
   return false
 }
 
-
-
 onMounted(() => {
   window.addEventListener('contextmenu', handleContextMenu)
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('copy', handleCopy)
   document.addEventListener('selectstart', handleSelectStart)
-
-  // Проверка DevTools каждые 500ms
-  const devToolsInterval = setInterval(checkDevTools, 500)
-
-  // Очистка при размонтировании
-  onUnmounted(() => {
-    clearInterval(devToolsInterval)
-  })
 })
 
 onUnmounted(() => {
