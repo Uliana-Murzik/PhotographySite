@@ -2,25 +2,21 @@
 import { onMounted, onUnmounted } from 'vue'
 import SiteHeader from './components/layout/SiteHeader.vue'
 
-// Защита от контекстного меню
 const handleContextMenu = (event: MouseEvent) => {
   event.preventDefault()
 }
 
 // Защита от горячих клавиш и скриншотов
 const handleKeyDown = (event: KeyboardEvent) => {
-  // Блокируем Ctrl/Cmd + S (сохранение) и Ctrl/Cmd + P (печать)
   if ((event.ctrlKey || event.metaKey) && (event.key === 's' || event.key === 'p')) {
     event.preventDefault()
   }
 
-  // Блокируем Print Screen (частично работает, зависит от браузера)
   if (event.key === 'PrintScreen' || event.key === 'F12') {
     event.preventDefault()
     return false
   }
 
-  // Блокируем открытие DevTools через комбинации
   if (
     (event.ctrlKey || event.metaKey) &&
     (event.shiftKey || event.altKey) &&
@@ -30,7 +26,6 @@ const handleKeyDown = (event: KeyboardEvent) => {
     return false
   }
 
-  // Блокируем F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
   if (
     event.key === 'F12' ||
     ((event.ctrlKey || event.metaKey) && event.shiftKey && ['I', 'J', 'C'].includes(event.key)) ||
@@ -97,7 +92,6 @@ body {
   user-select: none;
 }
 
-/* Разрешаем выделение только в полях ввода */
 input,
 textarea {
   -webkit-user-select: text;
@@ -108,7 +102,6 @@ textarea {
 
 #app {
   min-height: 100vh;
-  /* Защита от drag-and-drop */
   -webkit-user-drag: none;
   -khtml-user-drag: none;
   -moz-user-drag: none;
@@ -118,7 +111,6 @@ textarea {
 .page-content {
   max-width: 960px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
-  position: relative;
+  padding: 40px 24px 64px;
 }
 </style>

@@ -35,24 +35,24 @@ const { photos } = storeToRefs(galleryStore)
 .page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .page__title {
-  font-size: 1.6rem;
+  font-size: 26px;
   font-weight: 500;
   margin: 0;
 }
 
 .page__subtitle {
-  margin: 0 0 1.5rem;
+  margin: 0 0 24px;
   color: #666;
-  max-width: 32rem;
+  max-width: 512px;
 }
 
 .page__empty {
-  padding: 2rem;
-  border-radius: 0.75rem;
+  padding: 32px;
+  border-radius: 12px;
   background: #fafafa;
   color: #777;
 }
@@ -60,13 +60,13 @@ const { photos } = storeToRefs(galleryStore)
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
+  gap: 24px;
 }
 
 .gallery-grid__image-wrapper {
   position: relative;
   overflow: hidden;
-  border-radius: 0.75rem;
+  border-radius: 12px;
   background: #f2f2f2;
 }
 

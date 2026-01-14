@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/ContactsPage.vue'),
   },
   {
-    // Скрытая страница для владельца сайта (не отображается в навигации)
+    // Скрытая страница с админкой (не отображается в навигации)
     path: '/admin',
     name: 'admin',
     component: () => import('../views/AdminPage.vue'),
@@ -46,6 +46,12 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to) {
+    if (to.hash) {
+      return { el: to.hash, behavior: 'smooth' }
+    }
+    return { top: 0 }
+  },
 })
 
 export default router

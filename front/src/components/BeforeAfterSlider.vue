@@ -93,22 +93,6 @@ onUnmounted(() => {
       >
         <div class="before-after-slider__line"></div>
         <div class="before-after-slider__handle">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M8 5L16 12L8 19"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M16 5L8 12L16 19"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
         </div>
       </div>
 
@@ -130,7 +114,6 @@ onUnmounted(() => {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  cursor: col-resize;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -138,9 +121,9 @@ onUnmounted(() => {
 .before-after-slider__container {
   position: relative;
   width: 100%;
-  padding-bottom: 66.67%; /* дефолт: 3:2, но обычно переопределяется через prop frameRatio */
+  padding-bottom: 66.67%;
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   background: #f2f2f2;
 }
 
@@ -186,7 +169,6 @@ onUnmounted(() => {
   width: 4px;
   transform: translateX(-50%);
   z-index: 3;
-  cursor: col-resize;
 }
 
 .before-after-slider__line {
@@ -222,22 +204,22 @@ onUnmounted(() => {
 
 .before-after-slider__labels {
   position: absolute;
-  bottom: 1rem;
+  bottom: 16px;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: 0 16px;
   z-index: 4;
   pointer-events: none;
 }
 
 .before-after-slider__label {
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   background: rgba(0, 0, 0, 0.6);
   color: white;
-  border-radius: 0.25rem;
-  font-size: 0.9rem;
+  border-radius: 4px;
+  font-size: 14px;
   font-weight: 500;
 }
 

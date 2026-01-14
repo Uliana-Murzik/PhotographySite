@@ -15,20 +15,21 @@ import aboutImage from '../assets/about.jpg'
 
         <div class="about__paragraphs">
           <p class="about__paragraph">
-            У меня два профильных образования – фотограф-искусствовед и графически дизайнер. В прошлом я
-            несколько лет работала коммерческим фотографом в предметной и food-съёмке, что позволяет мне
-            глубже понимать задачи и визуальные требования к финальному изображению фотографов и брендов.
+            У меня два профильных образования – фотограф-искусствовед и графически дизайнер. В
+            прошлом я несколько лет работала коммерческим фотографом в предметной и food-съёмке, что
+            позволяет мне глубже понимать задачи и визуальные требования к финальному изображению
+            фотографов и брендов.
           </p>
 
           <p class="about__paragraph">
-            С 2022 года я являюсь старшим преподавателем в ИГУМО и МКИК, где обучаю студентов компьютерной
-            обработке изображений и ретуши в различных жанрах.
+            С 2022 года я являюсь старшим преподавателем в ИГУМО и МКИК, где обучаю студентов
+            компьютерной обработке изображений и ретуши в различных жанрах.
           </p>
 
           <p class="about__paragraph">
-            Как практикующий ретушер я специализируюсь на интерьерной фотографии. Вместе с фотографом Лизой
-            Гуровской мы создаем проекты, опубликованные в интерьерных журналах и онлайн-изданиях. В то же
-            время я открыта к сотрудничеству и в других направлениях.
+            Как практикующий ретушер я специализируюсь на интерьерной фотографии. Вместе с
+            фотографом Лизой Гуровской мы создаем проекты, опубликованные в интерьерных журналах и
+            онлайн-изданиях. В то же время я открыта к сотрудничеству и в других направлениях.
           </p>
 
           <p class="about__paragraph">Я работаю с клиентами онлайн по всему миру.</p>
@@ -90,7 +91,7 @@ import aboutImage from '../assets/about.jpg'
 
 .about__content {
   display: flex;
-  gap: 3rem;
+  gap: 48px;
   align-items: flex-start;
 }
 
@@ -116,24 +117,24 @@ import aboutImage from '../assets/about.jpg'
 }
 
 .about__name {
-  font-size: 2rem;
+  font-size: 32px;
   font-weight: 600;
-  margin: 0 0 0.5rem;
+  margin: 0 0 8px;
   letter-spacing: 0.02em;
 }
 
 .about__role {
-  font-size: 1.1rem;
+  font-size: 18px;
   color: #666;
-  margin: 0 0 2rem;
+  margin: 0 0 32px;
   font-weight: 400;
 }
 
 .about__paragraphs {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 2rem;
+  gap: 20px;
+  margin-bottom: 32px;
 }
 
 .about__paragraph {
@@ -144,7 +145,7 @@ import aboutImage from '../assets/about.jpg'
 
 .about__contacts {
   display: flex;
-  gap: 1.5rem;
+  gap: 24px;
   align-items: center;
 }
 
@@ -168,7 +169,7 @@ import aboutImage from '../assets/about.jpg'
 @media (max-width: 768px) {
   .about__content {
     flex-direction: column;
-    gap: 2rem;
+    gap: 32px;
   }
 
   .about__image {
@@ -176,7 +177,7 @@ import aboutImage from '../assets/about.jpg'
   }
 
   .about__name {
-    font-size: 1.6rem;
+    font-size: 26px;
   }
 }
 </style>

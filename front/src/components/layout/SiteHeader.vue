@@ -20,7 +20,7 @@ const isActive = (name: string) => computed(() => route.name === name)
     <div class="site-header__inner">
       <div class="site-header__top">
         <h1 class="site-header__title">Анастасия Горбачева</h1>
-        <p class="site-header__subtitle">Ретушер</p>
+        <RouterLink to="/" class="site-header__subtitle-link">Ретушер</RouterLink>
       </div>
 
       <nav class="site-header__nav" aria-label="Главная навигация">
@@ -42,7 +42,7 @@ const isActive = (name: string) => computed(() => route.name === name)
 
 <style scoped>
 .site-header {
-  padding: 2.5rem 1.5rem 0;
+  padding: 40px 24px 0;
 }
 
 .site-header__inner {
@@ -52,35 +52,46 @@ const isActive = (name: string) => computed(() => route.name === name)
 
 .site-header__top {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .site-header__title {
-  font-size: 2.4rem;
+  font-size: 38px;
   font-weight: 400;
   letter-spacing: 0.06em;
-  margin: 0 0 0.25rem;
+  margin: 0 0 4px;
 }
 
 .site-header__subtitle {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 18px;
   color: #555;
+}
+
+.site-header__subtitle-link {
+  display: inline-block;
+  margin: 0;
+  font-size: 18px;
+  color: #555;
+  text-decoration: none;
+}
+
+.site-header__subtitle-link:hover {
+  color: #222;
 }
 
 .site-header__nav {
   display: flex;
   justify-content: center;
-  gap: 2.5rem;
-  margin-top: 2rem;
-  font-size: 0.98rem;
+  gap: 40px;
+  margin-top: 32px;
+  font-size: 16px;
 }
 
 .site-header__link {
   text-decoration: none;
   color: #222;
   letter-spacing: 0.04em;
-  text-transform: none;
 }
 
 .site-header__link--active {
@@ -88,19 +99,19 @@ const isActive = (name: string) => computed(() => route.name === name)
 }
 
 .site-header__divider {
-  margin-top: 1.5rem;
+  margin-top: 24px;
   border: none;
   border-top: 1px solid #e0e0e0;
 }
 
 @media (max-width: 720px) {
   .site-header__nav {
-    gap: 1.25rem;
+    gap: 20px;
     flex-wrap: wrap;
   }
 
   .site-header__title {
-    font-size: 1.8rem;
+    font-size: 29px;
   }
 }
 </style>

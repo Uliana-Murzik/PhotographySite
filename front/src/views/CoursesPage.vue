@@ -11,9 +11,9 @@
 
 <style scoped>
 .page__title {
-  font-size: 1.6rem;
+  font-size: 26px;
   font-weight: 500;
-  margin: 0 0 0.75rem;
+  margin: 0 0 12px;
 }
 
 .page__subtitle {

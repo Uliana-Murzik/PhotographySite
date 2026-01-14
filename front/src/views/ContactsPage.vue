@@ -26,13 +26,13 @@
 
 <style scoped>
 .page__title {
-  font-size: 1.6rem;
+  font-size: 26px;
   font-weight: 500;
-  margin: 0 0 0.75rem;
+  margin: 0 0 12px;
 }
 
 .page__subtitle {
-  margin: 0 0 1.5rem;
+  margin: 0 0 24px;
   color: #666;
 }
 
@@ -42,7 +42,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .contacts-list__item {
@@ -51,13 +51,13 @@
 }
 
 .contacts-list__label {
-  font-size: 0.8rem;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #999;
 }
 
 .contacts-list__value {
-  font-size: 1rem;
+  font-size: 16px;
 }
 </style>

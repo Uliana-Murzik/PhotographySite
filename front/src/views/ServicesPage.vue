@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import emailjs from '@emailjs/browser'
 import BeforeAfterSlider from '../components/BeforeAfterSlider.vue'
 
-/**
- * Изображения лежат в `public/services/` и доступны по абсолютному пути с корня сайта.
- * Пример: `public/services/01before.jpg` → `/services/01before.jpg`
- */
 type ServiceImageVariant = 'before' | 'after'
 
 const getServiceImage = (index: string, variant: ServiceImageVariant) =>
@@ -23,8 +20,7 @@ const fullProcessingAfter = getServiceImage('03', 'after')
 const presetsBefore = getServiceImage('04', 'before')
 const presetsAfter = getServiceImage('04', 'after')
 
-// Форма консультации
-const consultationForm = ref({
+const form = ref({
   name: '',
   email: '',
   phone: '',
@@ -32,11 +28,52 @@ const consultationForm = ref({
   message: '',
 })
 
-const handleSubmit = (event: Event) => {
+const isSending = ref(false)
+const sendError = ref<string | null>(null)
+const sendSuccess = ref(false)
+
+const fillSubject = (subject: string) => {
+  form.value.subject = subject
+  document.getElementById('consultation-form')?.scrollIntoView({ behavior: 'smooth' })
+}
+
+const handleSubmit = async (event: Event) => {
   event.preventDefault()
-  // Здесь можно добавить отправку формы на сервер
-  console.log('Форма отправлена:', consultationForm.value)
-  alert('Спасибо! Я свяжусь с вами в ближайшее время.')
+  sendError.value = null
+  sendSuccess.value = false
+
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+  if (!serviceId || !templateId || !publicKey) {
+    sendError.value = 'Не настроена отправка: заполните VITE_EMAILJS_* в front/.env'
+    return
+  }
+
+  isSending.value = true
+  try {
+    await emailjs.send(
+      serviceId,
+      templateId,
+      {
+        name: form.value.name,
+        email: form.value.email,
+        phone: form.value.phone,
+        subject: form.value.subject || 'Заявка со страницы услуг',
+        message: form.value.message,
+      },
+      { publicKey },
+    )
+
+    sendSuccess.value = true
+    form.value = { name: '', email: '', phone: '', subject: '', message: '' }
+  } catch (e) {
+    sendError.value = 'Не удалось отправить. Попробуйте позже.'
+    console.error(e)
+  } finally {
+    isSending.value = false
+  }
 }
 </script>
 
@@ -58,7 +95,13 @@ const handleSubmit = (event: Event) => {
             <li>создание чистого цвета</li>
           </ul>
 
-          <button class="service-section__button">Заказать</button>
+          <button
+            class="service-section__button"
+            type="button"
+            @click="fillSubject('Цветокоррекция')"
+          >
+            Заказать
+          </button>
         </div>
 
         <div class="service-card__media">
@@ -84,7 +127,9 @@ const handleSubmit = (event: Event) => {
             <li>ретушь по ТЗ</li>
           </ul>
 
-          <button class="service-section__button">Заказать</button>
+          <button class="service-section__button" type="button" @click="fillSubject('Ретушь')">
+            Заказать
+          </button>
         </div>
 
         <div class="service-card__media">
@@ -112,7 +157,13 @@ const handleSubmit = (event: Event) => {
             <li>разглаживание мятых поверхностей</li>
           </ul>
 
-          <button class="service-section__button">Заказать</button>
+          <button
+            class="service-section__button"
+            type="button"
+            @click="fillSubject('Полная обработка фото')"
+          >
+            Заказать
+          </button>
         </div>
 
         <div class="service-card__media">
@@ -136,7 +187,9 @@ const handleSubmit = (event: Event) => {
             <li>возможность создания уникального стиля по вашему ТЗ и предпочтениям</li>
           </ul>
 
-          <button class="service-section__button">Заказать</button>
+          <button class="service-section__button" type="button" @click="fillSubject('Пресеты')">
+            Заказать
+          </button>
         </div>
 
         <div class="service-card__media service-card__media--small">
@@ -152,72 +205,54 @@ const handleSubmit = (event: Event) => {
       </div>
     </section>
 
-    <section class="service-section service-section--consultation">
-      <div class="service-section__content">
-        <h2 class="service-section__title">Персональная онлайн-консультация</h2>
-        <p class="service-section__subtitle">
-          Отвечу на ваши вопросы по ретуши и обработке в программах Adobe Lightroom и Adobe
-          Photoshop
+    <section id="consultation-form" class="service-section service-section--consultation">
+      <h2 class="service-section__title">Персональная онлайн-консультация</h2>
+      <p class="service-section__subtitle">
+        Напиши мне — и я отвечу на вопросы по ретуши и обработке в Adobe Lightroom / Photoshop.
+      </p>
+
+      <form class="consultation__form" @submit="handleSubmit">
+        <label class="consultation__label">
+          <span>Имя</span>
+          <input v-model="form.name" type="text" class="consultation__input" required />
+        </label>
+
+        <label class="consultation__label">
+          <span>Email</span>
+          <input v-model="form.email" type="email" class="consultation__input" required />
+        </label>
+
+        <label class="consultation__label">
+          <span>Телефон</span>
+          <input v-model="form.phone" type="tel" class="consultation__input" required />
+        </label>
+
+        <label class="consultation__label">
+          <span>Тема</span>
+          <input v-model="form.subject" type="text" class="consultation__input" required />
+        </label>
+
+        <label class="consultation__label">
+          <span>Сообщение</span>
+          <textarea
+            v-model="form.message"
+            class="consultation__textarea"
+            rows="5"
+            required
+          ></textarea>
+        </label>
+
+        <button type="submit" class="consultation__submit" :disabled="isSending">
+          {{ isSending ? 'Отправка...' : 'Отправить' }}
+        </button>
+
+        <p v-if="sendError" class="consultation__status consultation__status--error">
+          {{ sendError }}
         </p>
-
-        <div class="consultation">
-          <form class="consultation__form" @submit="handleSubmit">
-            <label class="consultation__label">
-              <span>Имя</span>
-              <input
-                v-model="consultationForm.name"
-                type="text"
-                class="consultation__input"
-                required
-              />
-            </label>
-
-            <label class="consultation__label">
-              <span>Email</span>
-              <input
-                v-model="consultationForm.email"
-                type="email"
-                class="consultation__input"
-                required
-              />
-            </label>
-
-            <label class="consultation__label">
-              <span>Телефон</span>
-              <input
-                v-model="consultationForm.phone"
-                type="tel"
-                class="consultation__input"
-                required
-              />
-            </label>
-
-            <label class="consultation__label">
-              <span>Тема</span>
-              <input
-                v-model="consultationForm.subject"
-                type="text"
-                class="consultation__input"
-                required
-              />
-            </label>
-
-            <label class="consultation__label">
-              <span>Сообщение</span>
-              <textarea
-                v-model="consultationForm.message"
-                class="consultation__textarea"
-                rows="5"
-                required
-              ></textarea>
-            </label>
-
-            <button type="submit" class="consultation__submit">Отправить</button>
-          </form>
-        </div>
-
-        <button class="service-section__button">Остались вопросы</button>
-      </div>
+        <p v-else-if="sendSuccess" class="consultation__status consultation__status--success">
+          Спасибо! Сообщение отправлено.
+        </p>
+      </form>
     </section>
   </div>
 </template>
@@ -331,10 +366,9 @@ const handleSubmit = (event: Event) => {
 
 .service-section--consultation {
   margin-bottom: 48px;
-}
-
-.consultation {
-  margin: 24px 0;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .consultation__form {
@@ -342,6 +376,7 @@ const handleSubmit = (event: Event) => {
   flex-direction: column;
   gap: 20px;
   max-width: 500px;
+  margin-top: 24px;
 }
 
 .consultation__label {
@@ -392,6 +427,24 @@ const handleSubmit = (event: Event) => {
 
 .consultation__submit:hover {
   background: #1d4ed8;
+}
+
+.consultation__submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.consultation__status {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+.consultation__status--error {
+  color: #c0392b;
+}
+
+.consultation__status--success {
+  color: #1e7e34;
 }
 
 @media (max-width: 768px) {

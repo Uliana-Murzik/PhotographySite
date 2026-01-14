@@ -127,19 +127,19 @@ const handleFilesChange = (event: Event) => {
 
 <style scoped>
 .page__title {
-  font-size: 1.6rem;
+  font-size: 26px;
   font-weight: 500;
-  margin: 0 0 0.75rem;
+  margin: 0 0 12px;
 }
 
 .page__subtitle {
-  margin: 0 0 1.5rem;
+  margin: 0 0 24px;
   color: #666;
 }
 
 .admin__card {
-  padding: 1.5rem 1.75rem 1.75rem;
-  border-radius: 0.9rem;
+  padding: 24px 28px 28px;
+  border-radius: 14px;
   background: #fafafa;
 }
 
@@ -147,50 +147,50 @@ const handleFilesChange = (event: Event) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .admin__card-title {
-  margin: 0 0 0.75rem;
-  font-size: 1.1rem;
+  margin: 0 0 12px;
+  font-size: 18px;
 }
 
 .admin__hint {
-  margin: 0 0 1.25rem;
-  font-size: 0.9rem;
+  margin: 0 0 20px;
+  font-size: 14px;
   color: #777;
 }
 
 .admin__form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
   max-width: 320px;
 }
 
 .admin__label {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  font-size: 0.95rem;
+  gap: 6px;
+  font-size: 15px;
 }
 
 .admin__input {
-  border-radius: 0.5rem;
+  border-radius: 8px;
   border: 1px solid #d0d0d0;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.95rem;
+  padding: 8px 12px;
+  font-size: 15px;
 }
 
 .admin__button {
   align-self: flex-start;
-  padding: 0.55rem 1.15rem;
+  padding: 9px 18px;
   border-radius: 999px;
   border: none;
   background: #222;
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 15px;
   cursor: pointer;
 }
 
@@ -199,11 +199,11 @@ const handleFilesChange = (event: Event) => {
 }
 
 .admin__secondary {
-  padding: 0.45rem 1rem;
+  padding: 7px 16px;
   border-radius: 999px;
   border: 1px solid #ccc;
   background: #fff;
-  font-size: 0.9rem;
+  font-size: 14px;
   cursor: pointer;
 }
 
@@ -212,29 +212,29 @@ const handleFilesChange = (event: Event) => {
 }
 
 .admin__error {
-  margin: -0.25rem 0 0.25rem;
-  font-size: 0.85rem;
+  margin: -4px 0 4px;
+  font-size: 14px;
   color: #c0392b;
 }
 
 .admin__label--file {
-  margin-top: 0.75rem;
+  margin-top: 12px;
 }
 
 .admin__file-input {
-  margin-top: 0.35rem;
-  font-size: 0.9rem;
+  margin-top: 6px;
+  font-size: 14px;
 }
 
 .admin__preview-grid {
-  margin-top: 1.5rem;
+  margin-top: 24px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 1rem;
+  gap: 16px;
 }
 
 .admin__preview-item {
-  border-radius: 0.6rem;
+  border-radius: 10px;
   overflow: hidden;
   background: #f0f0f0;
 }
@@ -247,8 +247,8 @@ const handleFilesChange = (event: Event) => {
 }
 
 .admin__empty {
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin-top: 16px;
+  font-size: 14px;
   color: #777;
 }
 </style>
