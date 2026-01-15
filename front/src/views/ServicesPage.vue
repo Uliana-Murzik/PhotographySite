@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import emailjs from '@emailjs/browser'
 import BeforeAfterSlider from '../components/BeforeAfterSlider.vue'
 
@@ -20,7 +20,9 @@ const fullProcessingAfter = getServiceImage('03', 'after')
 const presetsBefore = getServiceImage('04', 'before')
 const presetsAfter = getServiceImage('04', 'after')
 
-const form = ref({
+const FORM_SENT_KEY = 'consultation_form_sent'
+
+const form = reactive({
   name: '',
   email: '',
   phone: '',
@@ -31,14 +33,26 @@ const form = ref({
 const isSending = ref(false)
 const sendError = ref<string | null>(null)
 const sendSuccess = ref(false)
+const formAlreadySent = ref(false)
+
+// Проверяем при загрузке, была ли форма уже отправлена
+if (typeof window !== 'undefined') {
+  formAlreadySent.value = localStorage.getItem(FORM_SENT_KEY) === 'true'
+}
 
 const fillSubject = (subject: string) => {
-  form.value.subject = subject
+  form.subject = subject
   document.getElementById('consultation-form')?.scrollIntoView({ behavior: 'smooth' })
 }
 
 const handleSubmit = async (event: Event) => {
   event.preventDefault()
+
+  // Если уже отправлена, не отправляем еще раз
+  if (formAlreadySent.value) {
+    return
+  }
+
   sendError.value = null
   sendSuccess.value = false
 
@@ -57,17 +71,22 @@ const handleSubmit = async (event: Event) => {
       serviceId,
       templateId,
       {
-        name: form.value.name,
-        email: form.value.email,
-        phone: form.value.phone,
-        subject: form.value.subject || 'Заявка со страницы услуг',
-        message: form.value.message,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        subject: form.subject || 'Заявка со страницы услуг',
+        message: form.message,
       },
       { publicKey },
     )
 
     sendSuccess.value = true
-    form.value = { name: '', email: '', phone: '', subject: '', message: '' }
+    formAlreadySent.value = true
+
+    // Сохраняем в localStorage что форма была отправлена
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(FORM_SENT_KEY, 'true')
+    }
   } catch (e) {
     sendError.value = 'Не удалось отправить. Попробуйте позже.'
     console.error(e)
@@ -211,7 +230,17 @@ const handleSubmit = async (event: Event) => {
         Напиши мне — и я отвечу на вопросы по ретуши и обработке в Adobe Lightroom / Photoshop.
       </p>
 
-      <form class="consultation__form" @submit="handleSubmit">
+      <!-- Сообщение об успешной отправке -->
+      <div v-if="formAlreadySent" class="consultation__success-message">
+        <div class="consultation__success-icon">✓</div>
+        <h3 class="consultation__success-title">Форма отправлена</h3>
+        <p class="consultation__success-text">
+          Спасибо! Ваше сообщение успешно отправлено. Я свяжусь с вами в ближайшее время.
+        </p>
+      </div>
+
+      <!-- Форма (скрывается после отправки) -->
+      <form v-else class="consultation__form" @submit="handleSubmit">
         <label class="consultation__label">
           <span>Имя</span>
           <input v-model="form.name" type="text" class="consultation__input" required />
@@ -242,15 +271,12 @@ const handleSubmit = async (event: Event) => {
           ></textarea>
         </label>
 
-        <button type="submit" class="consultation__submit" :disabled="isSending">
+        <button type="submit" class="consultation__submit" :disabled="isSending || formAlreadySent">
           {{ isSending ? 'Отправка...' : 'Отправить' }}
         </button>
 
         <p v-if="sendError" class="consultation__status consultation__status--error">
           {{ sendError }}
-        </p>
-        <p v-else-if="sendSuccess" class="consultation__status consultation__status--success">
-          Спасибо! Сообщение отправлено.
         </p>
       </form>
     </section>
@@ -445,6 +471,44 @@ const handleSubmit = async (event: Event) => {
 
 .consultation__status--success {
   color: #1e7e34;
+}
+
+.consultation__success-message {
+  max-width: 500px;
+  margin: 24px auto 0;
+  padding: 48px 32px;
+  text-align: center;
+  background: #f0f9ff;
+  border: 2px solid #0ea5e9;
+  border-radius: 16px;
+}
+
+.consultation__success-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  background: #0ea5e9;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.consultation__success-title {
+  margin: 0 0 12px;
+  font-size: 24px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.consultation__success-text {
+  margin: 0;
+  font-size: 16px;
+  color: #475569;
+  line-height: 1.6;
 }
 
 @media (max-width: 768px) {

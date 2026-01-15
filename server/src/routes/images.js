@@ -11,14 +11,15 @@ const {
 } = require("../controllers/imageController");
 const { authenticateToken, requireAdmin } = require("../middleware/auth");
 const { upload } = require("../middleware/upload");
+const { protectImageAccess } = require("../utils/imageProtection");
 
 const router = express.Router();
 
 // Публичные маршруты
 router.get("/all", getAllImagesByAlbums);
 router.get("/album/:albumId", getImagesByAlbum);
-router.get("/web/:id", getWebImage);
-router.get("/thumbnail/:id", getThumbnail);
+router.get("/web/:id", protectImageAccess, getWebImage);
+router.get("/thumbnail/:id", protectImageAccess, getThumbnail);
 
 // Защищенные маршруты (только админ)
 router.post(

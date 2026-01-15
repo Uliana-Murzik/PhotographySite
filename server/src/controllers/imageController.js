@@ -1,6 +1,7 @@
 const path = require("path");
 const { Album, Image } = require("../db/models");
 const { processImage, deleteImage } = require("../utils/imageProcessor");
+const { generateImageToken } = require("../utils/imageProtection");
 
 // Получить все фотографии по альбомам
 const getAllImagesByAlbums = async (req, res) => {
@@ -33,17 +34,20 @@ const getAllImagesByAlbums = async (req, res) => {
         coverImageId: album.coverImageId,
         createdAt: album.createdAt,
       },
-      images: album.images.map((img) => ({
-        id: img.id,
-        filename: img.filename,
-        originalName: img.originalName,
-        description: img.description,
-        width: img.width,
-        height: img.height,
-        uploadedAt: img.uploadedAt,
-        webUrl: `/api/images/web/${img.id}`,
-        thumbnailUrl: `/api/images/thumbnail/${img.id}`,
-      })),
+      images: album.images.map((img) => {
+        const token = generateImageToken(img.id);
+        return {
+          id: img.id,
+          filename: img.filename,
+          originalName: img.originalName,
+          description: img.description,
+          width: img.width,
+          height: img.height,
+          uploadedAt: img.uploadedAt,
+          webUrl: `/api/images/web/${img.id}?token=${token}`,
+          thumbnailUrl: `/api/images/thumbnail/${img.id}?token=${token}`,
+        };
+      }),
     }));
 
     res.json(result);
@@ -72,17 +76,20 @@ const getImagesByAlbum = async (req, res) => {
       ],
     });
 
-    const result = images.map((img) => ({
-      id: img.id,
-      filename: img.filename,
-      originalName: img.originalName,
-      description: img.description,
-      width: img.width,
-      height: img.height,
-      uploadedAt: img.uploadedAt,
-      webUrl: `/api/images/web/${img.id}`,
-      thumbnailUrl: `/api/images/thumbnail/${img.id}`,
-    }));
+    const result = images.map((img) => {
+      const token = generateImageToken(img.id);
+      return {
+        id: img.id,
+        filename: img.filename,
+        originalName: img.originalName,
+        description: img.description,
+        width: img.width,
+        height: img.height,
+        uploadedAt: img.uploadedAt,
+        webUrl: `/api/images/web/${img.id}?token=${token}`,
+        thumbnailUrl: `/api/images/thumbnail/${img.id}?token=${token}`,
+      };
+    });
 
     res.json(result);
   } catch (error) {
@@ -136,10 +143,11 @@ const uploadImage = async (req, res) => {
       await album.update({ coverImageId: image.id });
     }
 
+    const token = generateImageToken(image.id);
     res.status(201).json({
       id: image.id,
-      webUrl: `/api/images/web/${image.id}`,
-      thumbnailUrl: `/api/images/thumbnail/${image.id}`,
+      webUrl: `/api/images/web/${image.id}?token=${token}`,
+      thumbnailUrl: `/api/images/thumbnail/${image.id}?token=${token}`,
       message: "Image uploaded successfully",
     });
   } catch (error) {

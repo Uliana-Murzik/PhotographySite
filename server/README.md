@@ -69,7 +69,7 @@ GRANT ALL PRIVILEGES ON DATABASE photography_db TO photography_user;
 Создайте файл `.env` (скопируйте из `.env.example`):
 
 ```env
-PORT=5000
+PORT=5001
 
 # PostgreSQL
 DB_HOST=localhost

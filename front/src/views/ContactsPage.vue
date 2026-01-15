@@ -10,15 +10,15 @@
     <ul class="contacts-list">
       <li class="contacts-list__item">
         <span class="contacts-list__label">E-mail</span>
-        <span class="contacts-list__value">example@mail.com</span>
+        <span class="contacts-list__value">Gorbacheva.retoucher@gmail.com</span>
       </li>
       <li class="contacts-list__item">
         <span class="contacts-list__label">Instagram</span>
-        <span class="contacts-list__value">@username</span>
+        <span class="contacts-list__value">@пупупу</span>
       </li>
       <li class="contacts-list__item">
         <span class="contacts-list__label">Telegram</span>
-        <span class="contacts-list__value">@username</span>
+        <span class="contacts-list__value">@murashka_pictures</span>
       </li>
     </ul>
   </section>

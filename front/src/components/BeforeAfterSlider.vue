@@ -1,20 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
+import ProtectedImage from './ProtectedImage.vue'
 
 interface Props {
   beforeImage: string
   afterImage: string
   beforeLabel?: string
   afterLabel?: string
-  /**
-   * Как вписывать изображение в рамку:
-   * - cover: заполняет рамку, может обрезаться
-   * - contain: показывает целиком, могут появиться поля
-   */
   imageFit?: 'cover' | 'contain'
   /**
-   * Соотношение высоты к ширине (height/width).
-   * Пример: 2/3 ≈ 0.666 (горизонтальный кадр), 4/3 ≈ 1.333 (вертикальнее).
+   * (высота/ширина).
+   * 2/3 (горизонтальный), 4/3 (вертикальные).
    */
   frameRatio?: number
 }
@@ -33,13 +29,6 @@ const isDragging = ref(false)
 const containerStyle = computed(() => ({
   paddingBottom: `${props.frameRatio * 100}%`,
 }))
-
-const imageClass = computed(() => [
-  'before-after-slider__image',
-  props.imageFit === 'contain'
-    ? 'before-after-slider__image--contain'
-    : 'before-after-slider__image--cover',
-])
 
 const handleMouseDown = () => {
   isDragging.value = true
@@ -70,30 +59,22 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    ref="sliderRef"
-    class="before-after-slider"
-    @mousedown="handleMouseDown"
-  >
+  <div ref="sliderRef" class="before-after-slider" @mousedown="handleMouseDown">
     <div class="before-after-slider__container" :style="containerStyle">
       <div class="before-after-slider__image-wrapper before-after-slider__image-wrapper--after">
-        <img :src="afterImage" :alt="afterLabel" :class="imageClass" />
+        <ProtectedImage :src="afterImage" :alt="afterLabel" :fit="imageFit" />
       </div>
 
       <div
         class="before-after-slider__image-wrapper before-after-slider__image-wrapper--before"
         :style="{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }"
       >
-        <img :src="beforeImage" :alt="beforeLabel" :class="imageClass" />
+        <ProtectedImage :src="beforeImage" :alt="beforeLabel" :fit="imageFit" />
       </div>
 
-      <div
-        class="before-after-slider__divider"
-        :style="{ left: `${sliderPosition}%` }"
-      >
+      <div class="before-after-slider__divider" :style="{ left: `${sliderPosition}%` }">
         <div class="before-after-slider__line"></div>
-        <div class="before-after-slider__handle">
-        </div>
+        <div class="before-after-slider__handle"></div>
       </div>
 
       <div class="before-after-slider__labels">
@@ -142,24 +123,6 @@ onUnmounted(() => {
 .before-after-slider__image-wrapper--before {
   z-index: 2;
   clip-path: inset(0 50% 0 0);
-}
-
-.before-after-slider__image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-user-drag: none;
-  pointer-events: none;
-}
-
-.before-after-slider__image--cover {
-  object-fit: cover;
-}
-
-.before-after-slider__image--contain {
-  object-fit: contain;
 }
 
 .before-after-slider__divider {

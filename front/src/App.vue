@@ -1,39 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import SiteHeader from './components/layout/SiteHeader.vue'
+import SiteFooter from './components/layout/SiteFooter.vue'
 
 const handleContextMenu = (event: MouseEvent) => {
   event.preventDefault()
-}
-
-// Защита от горячих клавиш и скриншотов
-const handleKeyDown = (event: KeyboardEvent) => {
-  if ((event.ctrlKey || event.metaKey) && (event.key === 's' || event.key === 'p')) {
-    event.preventDefault()
-  }
-
-  if (event.key === 'PrintScreen' || event.key === 'F12') {
-    event.preventDefault()
-    return false
-  }
-
-  if (
-    (event.ctrlKey || event.metaKey) &&
-    (event.shiftKey || event.altKey) &&
-    (event.key === 'I' || event.key === 'J' || event.key === 'C' || event.key === 'U')
-  ) {
-    event.preventDefault()
-    return false
-  }
-
-  if (
-    event.key === 'F12' ||
-    ((event.ctrlKey || event.metaKey) && event.shiftKey && ['I', 'J', 'C'].includes(event.key)) ||
-    ((event.ctrlKey || event.metaKey) && event.key === 'u')
-  ) {
-    event.preventDefault()
-    return false
-  }
 }
 
 const handleCopy = (event: ClipboardEvent) => {
@@ -52,14 +23,12 @@ const handleSelectStart = (event: Event) => {
 
 onMounted(() => {
   window.addEventListener('contextmenu', handleContextMenu)
-  window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('copy', handleCopy)
   document.addEventListener('selectstart', handleSelectStart)
 })
 
 onUnmounted(() => {
   window.removeEventListener('contextmenu', handleContextMenu)
-  window.removeEventListener('keydown', handleKeyDown)
   window.removeEventListener('copy', handleCopy)
   document.removeEventListener('selectstart', handleSelectStart)
 })
@@ -72,6 +41,8 @@ onUnmounted(() => {
     <main class="page-content">
       <RouterView />
     </main>
+
+    <SiteFooter />
   </div>
 </template>
 
@@ -102,6 +73,8 @@ textarea {
 
 #app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   -webkit-user-drag: none;
   -khtml-user-drag: none;
   -moz-user-drag: none;

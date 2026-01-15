@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import emailjs from '@emailjs/browser'
 
@@ -10,7 +10,7 @@ const servicesPreview = '/services/01after.jpg'
 
 const route = useRoute()
 
-const form = ref({
+const form = reactive({
   name: '',
   email: '',
   phone: '',
@@ -26,15 +26,11 @@ watch(
   () => route.query.subject,
   (value) => {
     if (typeof value === 'string' && value.trim()) {
-      form.value.subject = value
+      form.subject = value
     }
   },
   { immediate: true },
 )
-
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
 
 const handleSubmit = async (event: Event) => {
   event.preventDefault()
@@ -56,17 +52,21 @@ const handleSubmit = async (event: Event) => {
       serviceId,
       templateId,
       {
-        name: form.value.name,
-        email: form.value.email,
-        phone: form.value.phone,
-        subject: form.value.subject || 'Заявка с главной страницы',
-        message: form.value.message,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        subject: form.subject || 'Заявка с главной страницы',
+        message: form.message,
       },
       { publicKey },
     )
 
     sendSuccess.value = true
-    form.value = { name: '', email: '', phone: '', subject: '', message: '' }
+    form.name = ''
+    form.email = ''
+    form.phone = ''
+    form.subject = ''
+    form.message = ''
   } catch (e) {
     sendError.value = 'Не удалось отправить. Попробуйте позже.'
     console.error(e)
@@ -111,7 +111,6 @@ const handleSubmit = async (event: Event) => {
 
       <div class="preview preview--services">
         <img class="preview__img preview__img--wide" :src="servicesPreview" alt="Услуги" />
-        <p class="preview__caption">Цветокоррекция</p>
       </div>
     </section>
 
@@ -139,7 +138,7 @@ const handleSubmit = async (event: Event) => {
     </section>
 
     <section class="block" id="consultation">
-      <div class="block__header block__header--right">
+      <div class="block__header block__header--left">
         <h2 class="block__title">Персональная онлайн-консультация</h2>
       </div>
 
@@ -186,8 +185,6 @@ const handleSubmit = async (event: Event) => {
         </p>
       </form>
     </section>
-
-    <button class="to-top" type="button" @click="scrollToTop">Наверх</button>
   </div>
 </template>
 
@@ -246,6 +243,7 @@ const handleSubmit = async (event: Event) => {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  padding-top: 24px;
 }
 
 .block__header--right {
@@ -312,12 +310,6 @@ const handleSubmit = async (event: Event) => {
 
 .preview__img--wide {
   max-width: 520px;
-}
-
-.preview__caption {
-  margin: 0;
-  font-size: 14px;
-  color: #333;
 }
 
 .courses {
@@ -420,37 +412,5 @@ const handleSubmit = async (event: Event) => {
 
 .consultation__submit:hover {
   background: #1d4ed8;
-}
-
-.to-top {
-  position: sticky;
-  bottom: 18px;
-  align-self: flex-end;
-  background: none;
-  border: none;
-  padding: 0;
-  color: #333;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.to-top:hover {
-  color: #000;
-}
-
-@media (max-width: 820px) {
-  .hero {
-    grid-template-columns: 1fr;
-  }
-
-  .hero__image img {
-    max-width: 320px;
-  }
-
-  .courses {
-    grid-template-columns: 1fr;
-  }
-
-  /* consultation__form и так column */
 }
 </style>

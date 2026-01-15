@@ -14,11 +14,20 @@ const fs = require("fs").promises;
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Security middleware
-app.use(helmet());
-app.use(cors());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:4173"],
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
