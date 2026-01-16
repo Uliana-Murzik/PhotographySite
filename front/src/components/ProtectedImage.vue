@@ -20,7 +20,7 @@ const isLoading = ref(true)
 
 let image: HTMLImageElement | null = null
 
-// Получает реальные размеры контейнера
+// получаем реальные размеры контейнера
 const getContainerSize = () => {
   if (!containerRef.value) return { width: 320, height: 240 }
 
@@ -28,7 +28,7 @@ const getContainerSize = () => {
   let width = rect.width || containerRef.value.offsetWidth
   let height = rect.height || containerRef.value.offsetHeight
 
-  // Для абсолютно позиционированных элементов берём размеры из родителя
+  // для абсолютно позиционированных элементов берём размеры из родителя
   if (!width || width < 1 || !height || height < 1) {
     const parent = containerRef.value.parentElement
     if (parent) {
@@ -58,23 +58,22 @@ const drawImage = () => {
 
   const { width: containerWidth, height: containerHeight } = getContainerSize()
 
-  // Определяем размеры canvas
+  // определяем размеры canvas
   const displayWidth = containerWidth
   const displayHeight =
     props.autoHeight && props.fit === 'contain'
-      ? containerWidth / imageAspect // Галерея: высота из пропорций
-      : containerHeight // Услуги: фиксированная высота
+      ? containerWidth / imageAspect // галерея высота из пропорций
+      : containerHeight // услуги фиксированная высота
 
-  // Устанавливаем размер canvas с учетом DPR для четкости
+  // устанавливаем размер canvas с учетом DPR для четкости
   canvas.width = displayWidth * dpr
   canvas.height = displayHeight * dpr
   canvas.style.width = `${displayWidth}px`
   canvas.style.height = `${displayHeight}px`
 
-  // Масштабируем контекст для DPR
+  // масштабирует контекст для DPR
   ctx.scale(dpr, dpr)
 
-  // Очищаем canvas
   ctx.clearRect(0, 0, displayWidth, displayHeight)
 
   let drawWidth = displayWidth
@@ -83,14 +82,14 @@ const drawImage = () => {
   let drawY = 0
 
   if (props.fit === 'contain') {
-    // Сохраняет пропорции м вписывает в контейнер
+    // сохраняет пропорции м вписывает в контейнер
     const scale = Math.min(displayWidth / imageWidth, displayHeight / imageHeight)
     drawWidth = imageWidth * scale
     drawHeight = imageHeight * scale
     drawX = (displayWidth - drawWidth) / 2
     drawY = (displayHeight - drawHeight) / 2
   } else if (props.fit === 'cover') {
-    // Заполняее контейнер и сохраняет пропорции
+    // заполняее контейнер и сохраняет пропорции
     const scale = Math.max(displayWidth / imageWidth, displayHeight / imageHeight)
     drawWidth = imageWidth * scale
     drawHeight = imageHeight * scale
@@ -113,7 +112,7 @@ const loadImage = () => {
     imageLoaded.value = true
     isLoading.value = false
 
-    // Высота контейнера на осн пропорций (в галерее)
+    // высота контейнера на осн пропорций (в галерее)
     if (props.fit === 'contain' && props.autoHeight) {
       const { width: containerWidth } = getContainerSize()
       const imageAspect =
@@ -155,10 +154,10 @@ onMounted(() => {
     containerRef.value.addEventListener('dragstart', handleDragStart)
     containerRef.value.addEventListener('selectstart', handleSelectStart)
 
-    // Отслеживаем изменение размера контейнера
+    //следим за изменением размера контейнера
     const resizeObserver = new ResizeObserver(() => {
       if (imageLoaded.value && image && containerRef.value) {
-        // Для галереи: обновляем высоту контейнера
+        // для галереи обновляем высоту контейнера
         if (props.fit === 'contain' && props.autoHeight) {
           const { width: containerWidth } = getContainerSize()
           if (containerWidth > 0) {
@@ -174,7 +173,7 @@ onMounted(() => {
 
     resizeObserver.observe(containerRef.value)
 
-    // Сохраняем observer для очистки
+    // сохраняем observer для очистки
     ;(containerRef.value as HTMLElement & { _resizeObserver?: ResizeObserver })._resizeObserver =
       resizeObserver
   }
@@ -186,7 +185,7 @@ onUnmounted(() => {
     containerRef.value.removeEventListener('dragstart', handleDragStart)
     containerRef.value.removeEventListener('selectstart', handleSelectStart)
 
-    // Отключаем ResizeObserver
+    // отключаем ResizeObserver
     const resizeObserver = (
       containerRef.value as HTMLElement & { _resizeObserver?: ResizeObserver }
     )?._resizeObserver
@@ -208,12 +207,10 @@ watch(
 
 <template>
   <div ref="containerRef" class="protected-image">
-    <!-- Скелетон загрузки -->
     <div v-if="isLoading" class="protected-image__skeleton" aria-label="Загрузка изображения">
       <div class="protected-image__skeleton-shimmer"></div>
     </div>
 
-    <!-- Canvas с изображением -->
     <canvas
       ref="canvasRef"
       class="protected-image__canvas"
@@ -267,15 +264,6 @@ watch(
   cursor: default;
 }
 
-/* Блокируем сохранение через DevTools */
-.protected-image__canvas::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-/* Скелетон загрузки */
 .protected-image__skeleton {
   position: absolute;
   top: 0;

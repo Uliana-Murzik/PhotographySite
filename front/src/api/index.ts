@@ -1,7 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
-// ============ Types ============
-
 export interface User {
   id: number
   login: string
@@ -42,7 +40,7 @@ export interface AlbumWithImages {
 
 let authToken: string | null = null
 
-//Токен для авторизации
+// токен для авторизации
 export function setToken(token: string | null) {
   authToken = token
   if (token) {
@@ -52,7 +50,6 @@ export function setToken(token: string | null) {
   }
 }
 
-//Токен для щагрузки изображений
 export function getToken(): string | null {
   if (!authToken) {
     authToken = localStorage.getItem('authToken')
@@ -65,7 +62,7 @@ export function clearToken() {
   localStorage.removeItem('authToken')
 }
 
-//Получение заголовков
+// получение заголовков
 function getHeaders(includeAuth = false): HeadersInit {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -127,7 +124,7 @@ export function logout() {
   clearToken()
 }
 
-// ============ Albums API ============
+// галерея
 
 export async function fetchAlbums(): Promise<Album[]> {
   const response = await fetch(`${API_BASE}/api/albums`)
@@ -172,7 +169,7 @@ export async function deleteAlbum(id: number): Promise<void> {
   }
 }
 
-// ============ Images API ============
+// изображения
 
 export async function fetchAllImages(): Promise<AlbumWithImages[]> {
   const response = await fetch(`${API_BASE}/api/images/all`)
@@ -218,7 +215,7 @@ export async function deleteImage(id: number): Promise<void> {
   }
 }
 
-// ============ Image URLs ============
+  // url изображений
 
 export function getWebImageUrl(id: number, token?: string): string {
   const url = `${API_BASE}/api/images/web/${id}`

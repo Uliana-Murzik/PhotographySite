@@ -3,7 +3,7 @@ import { onMounted, onUnmounted } from 'vue'
 import SiteHeader from './components/layout/SiteHeader.vue'
 import SiteFooter from './components/layout/SiteFooter.vue'
 
-const handleContextMenu = (event: MouseEvent) => {
+const handleContextMenu = (event: MouseEvent): void => {
   event.preventDefault()
 }
 

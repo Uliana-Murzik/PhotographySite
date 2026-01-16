@@ -34,7 +34,7 @@ const handleMouseDown = () => {
   isDragging.value = true
 }
 
-const handleMouseMove = (event: MouseEvent) => {
+const handleMouseMove = (event: MouseEvent): void => {
   if (!isDragging.value || !sliderRef.value) return
 
   const rect = sliderRef.value.getBoundingClientRect()

@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/ContactsPage.vue'),
   },
   {
-    // Скрытая страница с админкой (не отображается в навигации)
+    // скрытая страница с админкой
     path: '/admin',
     name: 'admin',
     component: () => import('../views/AdminPage.vue'),

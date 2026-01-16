@@ -29,8 +29,8 @@ export const useGalleryStore = defineStore('gallery', () => {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  // Computed: фото сгруппированные по альбомам
-  const imagesByAlbum = computed(() => {
+  // фото сгруппированные по альбомам
+  const imagesByAlbum = computed<Record<number, GalleryImage[]>>(() => {
     const grouped: Record<number, GalleryImage[]> = {}
     for (const album of albums.value) {
       grouped[album.id] = images.value.filter((img) => img.albumId === album.id)
@@ -38,12 +38,12 @@ export const useGalleryStore = defineStore('gallery', () => {
     return grouped
   })
 
-  // Computed: альбомы с фотографиями (для отображения в галерее)
-  const albumsWithImages = computed(() => {
-    return albums.value.filter((album) => imagesByAlbum.value[album.id]?.length > 0)
+  // альбомы с фотографиями (для отображения в галерее)
+  const albumsWithImages = computed<Album[]>(() => {
+    return albums.value.filter((album) => (imagesByAlbum.value[album.id]?.length ?? 0) > 0)
   })
 
-  // Загрузка всех данных с сервера
+  // загрузка всех данных с сервера
   async function fetchAll() {
     isLoading.value = true
     error.value = null
@@ -73,7 +73,7 @@ export const useGalleryStore = defineStore('gallery', () => {
     }
   }
 
-  // Загрузка только альбомов (для админки)
+  // щагрузка только альбомов (для админки)
   async function fetchAlbums() {
     isLoading.value = true
     error.value = null
@@ -95,7 +95,7 @@ export const useGalleryStore = defineStore('gallery', () => {
     }
   }
 
-  // Создание альбома
+  // создание альбома
   async function addAlbum(name: string, description?: string): Promise<Album | null> {
     try {
       const album = await api.createAlbum(name, description)
@@ -115,7 +115,7 @@ export const useGalleryStore = defineStore('gallery', () => {
     }
   }
 
-  // Обновление альбома
+  // обновление альбома
   async function updateAlbum(
     id: number,
     data: { name?: string; description?: string },
@@ -124,10 +124,15 @@ export const useGalleryStore = defineStore('gallery', () => {
       const updated = await api.updateAlbum(id, data)
       const index = albums.value.findIndex((a) => a.id === id)
       if (index !== -1) {
-        albums.value[index] = {
-          ...albums.value[index],
-          name: updated.name,
-          description: updated.description,
+        const existingAlbum = albums.value[index]
+        if (existingAlbum) {
+          albums.value[index] = {
+            id: existingAlbum.id,
+            name: updated.name,
+            description: updated.description,
+            coverImageId: existingAlbum.coverImageId,
+            createdAt: existingAlbum.createdAt,
+          }
         }
       }
       return true
@@ -138,7 +143,7 @@ export const useGalleryStore = defineStore('gallery', () => {
     }
   }
 
-  // Удаление альбома
+  // удаление альбома
   async function removeAlbum(id: number): Promise<boolean> {
     try {
       await api.deleteAlbum(id)
@@ -152,7 +157,7 @@ export const useGalleryStore = defineStore('gallery', () => {
     }
   }
 
-  // Загрузка изображения
+  // загрузка изображения
   async function uploadImage(
     file: File,
     albumId: number,
@@ -183,7 +188,7 @@ export const useGalleryStore = defineStore('gallery', () => {
     }
   }
 
-  // Удаление изображения
+  // удаление изображения
   async function removeImage(id: number): Promise<boolean> {
     try {
       await api.deleteImage(id)

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { type ComputedRef } from 'vue';
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const navItems = [
+const navItems: { label: string; to: string; name: string }[] = [
   { label: 'Услуги', to: '/services', name: 'services' },
   { label: 'Галерея', to: '/gallery', name: 'gallery' },
   { label: 'Онлайн-курсы', to: '/courses', name: 'courses' },
@@ -12,7 +13,7 @@ const navItems = [
   { label: 'Контакты', to: '/contacts', name: 'contacts' },
 ]
 
-const isActive = (name: string) => computed(() => route.name === name)
+const isActive = (name: string): ComputedRef<boolean> => computed(() => route.name === name)
 </script>
 
 <template>

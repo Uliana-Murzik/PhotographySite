@@ -8,24 +8,23 @@ import { getWebImageUrl } from '../api'
 const galleryStore = useGalleryStore()
 const { albums, imagesByAlbum, isLoading, error: storeError } = storeToRefs(galleryStore)
 
-// Auth state
-const login = ref('')
-const password = ref('')
-const isAuthenticated = ref(false)
-const authError = ref('')
-const isAuthLoading = ref(false)
+const login = ref<string>('')
+const password = ref<string>('')
+const isAuthenticated = ref<boolean>(false)
+const authError = ref<string>('')
+const isAuthLoading = ref<boolean>(false)
 
-const newAlbumName = ref('')
-const newAlbumDescription = ref('')
+const newAlbumName = ref<string>('')
+const newAlbumDescription = ref<string>('')
 
 const selectedAlbumId = ref<number | null>(null)
 
 const editingAlbum = ref<Album | null>(null)
-const editAlbumName = ref('')
-const editAlbumDescription = ref('')
+const editAlbumName = ref<string>('')
+const editAlbumDescription = ref<string>('')
 
-const isUploading = ref(false)
-const uploadProgress = ref(0)
+const isUploading = ref<boolean>(false)
+const uploadProgress = ref<number>(0)
 
 onMounted(async () => {
   const result = await api.verifyToken()
@@ -39,8 +38,11 @@ const defaultAlbumId = computed(() => albums.value[0]?.id || null)
 
 async function loadData() {
   await galleryStore.fetchAll()
-  if (albums.value.length && !selectedAlbumId.value) {
-    selectedAlbumId.value = albums.value[0].id
+  if (albums.value.length > 0 && !selectedAlbumId.value) {
+    const firstAlbum = albums.value[0]
+    if (firstAlbum) {
+      selectedAlbumId.value = firstAlbum.id
+    }
   }
 }
 
@@ -102,10 +104,16 @@ function startEditAlbum(album: Album) {
 async function saveEditAlbum() {
   if (!editingAlbum.value || !editAlbumName.value.trim()) return
 
-  await galleryStore.updateAlbum(editingAlbum.value.id, {
+  const updateData: { name: string; description?: string } = {
     name: editAlbumName.value.trim(),
-    description: editAlbumDescription.value.trim() || undefined,
-  })
+  }
+
+  const trimmedDescription = editAlbumDescription.value.trim()
+  if (trimmedDescription) {
+    updateData.description = trimmedDescription
+  }
+
+  await galleryStore.updateAlbum(editingAlbum.value.id, updateData)
 
   editingAlbum.value = null
 }
@@ -142,8 +150,11 @@ async function handleFilesChange(event: Event) {
   uploadProgress.value = 0
 
   for (let i = 0; i < files.length; i++) {
-    await galleryStore.uploadImage(files[i], albumId, files[i].name)
-    uploadProgress.value = Math.round(((i + 1) / files.length) * 100)
+    const file = files[i]
+    if (file) {
+      await galleryStore.uploadImage(file, albumId, file.name)
+      uploadProgress.value = Math.round(((i + 1) / files.length) * 100)
+    }
   }
 
   isUploading.value = false
@@ -165,7 +176,6 @@ async function handleDeletePhoto(photoId: number) {
       Скрытая страница для управления альбомами и загрузки работ в галерею.
     </p>
 
-    <!-- Форма входа -->
     <div v-if="!isAuthenticated" class="admin__card">
       <h3 class="admin__card-title">Вход для администратора</h3>
       <p class="admin__hint">Используйте логин и пароль.</p>
@@ -207,14 +217,12 @@ async function handleDeletePhoto(photoId: number) {
         <button type="button" class="admin__secondary" @click="handleLogout">Выйти</button>
       </div>
 
-      <!-- Ошибка store -->
       <div v-if="storeError" class="admin__error-banner">
         {{ storeError }}
       </div>
 
       <div v-if="isLoading" class="admin__loading">Загрузка данных...</div>
 
-      <!-- Создание альбома -->
       <div class="admin__card">
         <h4 class="admin__section-title">Создать альбом</h4>
         <form class="admin__form admin__form--inline" @submit.prevent="handleCreateAlbum">
@@ -236,7 +244,6 @@ async function handleDeletePhoto(photoId: number) {
         </form>
       </div>
 
-      <!-- Список альбомов -->
       <div v-if="albums.length" class="admin__card">
         <h4 class="admin__section-title">Альбомы</h4>
 
@@ -247,7 +254,6 @@ async function handleDeletePhoto(photoId: number) {
             class="admin__album"
             :class="{ 'admin__album--selected': selectedAlbumId === album.id }"
           >
-            <!-- Режим редактирования -->
             <div v-if="editingAlbum?.id === album.id" class="admin__album-edit">
               <input
                 v-model="editAlbumName"
@@ -329,7 +335,6 @@ async function handleDeletePhoto(photoId: number) {
         </div>
       </div>
 
-      <!-- Загрузка фото -->
       <div class="admin__card">
         <h4 class="admin__section-title">Загрузить фотографии</h4>
 
@@ -357,7 +362,6 @@ async function handleDeletePhoto(photoId: number) {
             />
           </label>
 
-          <!-- Прогресбар -->
           <div v-if="isUploading" class="admin__progress">
             <div class="admin__progress-bar" :style="{ width: `${uploadProgress}%` }"></div>
             <span class="admin__progress-text">Загрузка: {{ uploadProgress }}%</span>
@@ -538,7 +542,6 @@ async function handleDeletePhoto(photoId: number) {
   max-width: 320px;
 }
 
-/* Progress bar */
 .admin__progress {
   position: relative;
   height: 24px;
@@ -564,7 +567,6 @@ async function handleDeletePhoto(photoId: number) {
   mix-blend-mode: difference;
 }
 
-/* Albums list */
 .admin__albums-list {
   display: flex;
   flex-direction: column;
@@ -647,7 +649,6 @@ async function handleDeletePhoto(photoId: number) {
   border-color: #c0392b;
 }
 
-/* Album photos preview */
 .admin__album-photos {
   display: flex;
   flex-wrap: wrap;
