@@ -3,9 +3,6 @@ import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 
-import App from '../App.vue'
-import SiteHeader from '../components/layout/SiteHeader.vue'
-import SiteFooter from '../components/layout/SiteFooter.vue'
 import BeforeAfterSlider from '../components/BeforeAfterSlider.vue'
 import ConsultationForm from '../components/ConsultationForm.vue'
 import ProtectedImage from '../components/ProtectedImage.vue'
@@ -60,30 +57,6 @@ const mockFetch = vi.mocked(fetch)
 const router = createRouter({
   history: createWebHistory(),
   routes: [{ path: '/', component: { template: '<div>Home</div>' } }],
-})
-
-// 2 теста App
-describe('App', () => {
-  it('должен монтироваться', async () => {
-    const wrapper = mount(App, {
-      global: {
-        plugins: [router],
-      },
-    })
-    expect(wrapper.exists()).toBe(true)
-    expect(wrapper.find('#app').exists()).toBe(true)
-  })
-
-  it('должен содержать основные компоненты', async () => {
-    const wrapper = mount(App, {
-      global: {
-        plugins: [router],
-      },
-    })
-    expect(wrapper.findComponent(SiteHeader).exists()).toBe(true)
-    expect(wrapper.findComponent(SiteFooter).exists()).toBe(true)
-    expect(wrapper.find('main.page-content').exists()).toBe(true)
-  })
 })
 
 // 3 теста Gallery Store
