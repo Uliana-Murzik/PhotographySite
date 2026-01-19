@@ -1,37 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
 import SiteHeader from './components/layout/SiteHeader.vue'
 import SiteFooter from './components/layout/SiteFooter.vue'
-
-const handleContextMenu = (event: MouseEvent): void => {
-  event.preventDefault()
-}
-
-const handleCopy = (event: ClipboardEvent) => {
-  event.preventDefault()
-  return false
-}
-
-const handleSelectStart = (event: Event) => {
-  const target = event.target as HTMLElement
-  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-    return true
-  }
-  event.preventDefault()
-  return false
-}
-
-onMounted(() => {
-  window.addEventListener('contextmenu', handleContextMenu)
-  window.addEventListener('copy', handleCopy)
-  document.addEventListener('selectstart', handleSelectStart)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('contextmenu', handleContextMenu)
-  window.removeEventListener('copy', handleCopy)
-  document.removeEventListener('selectstart', handleSelectStart)
-})
 </script>
 
 <template>
@@ -56,11 +25,7 @@ body {
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  color: #1f1f1f;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  background: #ffffff;
 }
 
 input,
@@ -75,10 +40,6 @@ textarea {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
 }
 
 .page-content {

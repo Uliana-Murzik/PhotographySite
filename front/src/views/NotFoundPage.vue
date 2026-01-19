@@ -37,7 +37,6 @@ import { RouterLink } from 'vue-router'
   font-size: 32px;
   font-weight: 600;
   margin: 0 0 16px;
-  color: #1f1f1f;
 }
 
 .not-found__link {

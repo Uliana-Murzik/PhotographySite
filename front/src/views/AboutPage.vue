@@ -105,10 +105,6 @@ import aboutImage from '../assets/about.jpg'
   height: auto;
   display: block;
   object-fit: cover;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-user-drag: none;
-  pointer-events: none;
 }
 
 .about__text {

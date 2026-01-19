@@ -74,7 +74,7 @@ const servicesPreview = '/services/01after.jpg'
         <h2 class="block__title">Персональная онлайн-консультация</h2>
       </div>
 
-      <ConsultationForm form-id="consultation" />
+      <ConsultationForm form-id="consultation" :prevent-multiple-submissions="true" />
     </section>
   </div>
 </template>

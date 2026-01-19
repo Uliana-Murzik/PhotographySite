@@ -126,7 +126,6 @@ const socialLinks = [
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #1f1f1f;
   color: #fff;
   transition:
     background 0.2s ease,

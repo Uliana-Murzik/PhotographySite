@@ -74,6 +74,10 @@ const drawImage = () => {
   // масштабирует контекст для DPR
   ctx.scale(dpr, dpr)
 
+  // заполняем белым фоном перед отрисовкой
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, displayWidth, displayHeight)
+
   ctx.clearRect(0, 0, displayWidth, displayHeight)
 
   let drawWidth = displayWidth
@@ -131,29 +135,10 @@ const loadImage = () => {
   image.src = props.src
 }
 
-const handleContextMenu = (e: MouseEvent) => {
-  e.preventDefault()
-  return false
-}
-
-const handleDragStart = (e: DragEvent) => {
-  e.preventDefault()
-  return false
-}
-
-const handleSelectStart = (e: Event) => {
-  e.preventDefault()
-  return false
-}
-
 onMounted(() => {
   loadImage()
 
   if (containerRef.value) {
-    containerRef.value.addEventListener('contextmenu', handleContextMenu)
-    containerRef.value.addEventListener('dragstart', handleDragStart)
-    containerRef.value.addEventListener('selectstart', handleSelectStart)
-
     //следим за изменением размера контейнера
     const resizeObserver = new ResizeObserver(() => {
       if (imageLoaded.value && image && containerRef.value) {
@@ -181,10 +166,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (containerRef.value) {
-    containerRef.value.removeEventListener('contextmenu', handleContextMenu)
-    containerRef.value.removeEventListener('dragstart', handleDragStart)
-    containerRef.value.removeEventListener('selectstart', handleSelectStart)
-
     // отключаем ResizeObserver
     const resizeObserver = (
       containerRef.value as HTMLElement & { _resizeObserver?: ResizeObserver }
@@ -217,7 +198,6 @@ watch(
       :class="{ 'protected-image__canvas--loaded': imageLoaded }"
       :aria-label="alt || 'Protected image'"
     ></canvas>
-    <div class="protected-image__overlay" aria-hidden="true"></div>
   </div>
 </template>
 
@@ -234,34 +214,15 @@ watch(
   width: 100%;
   height: 100%;
   display: block;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-user-drag: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  pointer-events: none;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  background: transparent;
 }
 
 .protected-image__canvas--loaded {
   opacity: 1;
-}
-
-.protected-image__overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: transparent;
-  pointer-events: auto;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-user-drag: none;
-  cursor: default;
 }
 
 .protected-image__skeleton {
