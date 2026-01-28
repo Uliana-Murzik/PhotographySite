@@ -86,6 +86,7 @@ const fillSubject = (subject: string): void => {
           <BeforeAfterSlider
             :before-image="retouchingBefore"
             :after-image="retouchingAfter"
+            :frame-ratio="4 / 3"
             before-label="До"
             after-label="После"
           />
