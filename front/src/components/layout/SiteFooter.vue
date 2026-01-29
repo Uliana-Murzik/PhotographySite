@@ -26,7 +26,7 @@ const socialLinks = [
   <footer class="site-footer">
     <div class="site-footer__inner">
       <div class="site-footer__left">
-        <p class="site-footer__copyright">© 2026 Горбачева Анастасия</p>
+        <p class="site-footer__copyright">© 2026 Ульяна Мурзик</p>
         <a href="mailto:Anastasia.art.food@gmail.com" class="site-footer__email">
           Anastasia.art.food@gmail.com
         </a>

@@ -44,9 +44,43 @@ const allImages = computed(() => {
   return result
 })
 
+const scrollToAlbum = async (albumId: number | null) => {
+  await nextTick()
+  const container = galleryContainerRef.value
+  if (!container) return
+
+  const firstAlbumId = albumsWithImages.value[0]?.id
+  if (albumId === null || albumId === firstAlbumId) {
+    container.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
+
+  const targets = Array.from(
+    container.querySelectorAll<HTMLElement>(`.gallery__item[data-album-id="${albumId}"]`)
+  )
+  if (!targets.length) return
+
+  const containerRect = container.getBoundingClientRect()
+  const sortedTargets = targets
+    .map((el) => {
+      const rect = el.getBoundingClientRect()
+      const top = rect.top - containerRect.top + container.scrollTop
+      const left = rect.left - containerRect.left + container.scrollLeft
+      return { el, top, left }
+    })
+    .sort((a, b) => {
+      if (Math.abs(a.top - b.top) > 1) return a.top - b.top
+      return a.left - b.left
+    })
+
+  container.scrollTo({ top: sortedTargets[0].top, behavior: 'smooth' })
+}
+
 // Выбор альбома
 const selectAlbum = (albumId: number) => {
-  activeAlbumId.value = activeAlbumId.value === albumId ? null : albumId
+  const nextSelection = activeAlbumId.value === albumId ? null : albumId
+  activeAlbumId.value = nextSelection
+  scrollToAlbum(nextSelection)
 }
 
 // Проверка активности изображения
@@ -128,6 +162,8 @@ const handleKeydown = (e: KeyboardEvent) => {
 const canvasRefs = ref<Map<number, HTMLCanvasElement>>(new Map())
 const mainCanvasRef = ref<HTMLCanvasElement | null>(null)
 const thumbCanvasRefs = ref<Map<number, HTMLCanvasElement>>(new Map())
+const galleryContainerRef = ref<HTMLDivElement | null>(null)
+const initialScrollDone = ref(false)
 
 const setCanvasRef = (el: HTMLCanvasElement | null, id: number) => {
   if (el) canvasRefs.value.set(id, el)
@@ -237,8 +273,21 @@ const drawViewerCanvases = async () => {
 watch(albumsWithImages, (albums) => {
   if (albums.length && activeAlbumId.value === null) {
     activeAlbumId.value = albums[0].id
+    scrollToAlbum(albums[0].id)
   }
 }, { immediate: true })
+
+watch(
+  [() => allImages.value.length, () => galleryContainerRef.value],
+  async ([imagesCount, container]) => {
+    if (initialScrollDone.value) return
+    if (!container || !imagesCount || !activeAlbumId.value) return
+    await nextTick()
+    await scrollToAlbum(activeAlbumId.value)
+    initialScrollDone.value = true
+  },
+  { immediate: true }
+)
 
 // Перерисовка при загрузке данных
 watch(allImages, () => {
@@ -274,7 +323,8 @@ onUnmounted(() => {
     <div v-else-if="!allImages.length" class="page__empty">Пока здесь нет фотографий</div>
 
     <div v-else class="gallery">
-      <div class="gallery__grid">
+      <div class="gallery__container" ref="galleryContainerRef">
+        <div class="gallery__grid">
         <div 
           v-for="img in allImages" 
           :key="img.id"
@@ -283,6 +333,7 @@ onUnmounted(() => {
             'gallery__item--active': isImageActive(img.albumId),
             'gallery__item--vertical': img.height > img.width
           }"
+          :data-album-id="img.albumId"
           @click="openViewer(img)"
         >
           <div class="gallery__canvas-wrap">
@@ -293,6 +344,8 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+      </div>
+      
 
       <div class="gallery__categories">
         <button
@@ -425,6 +478,10 @@ onUnmounted(() => {
   gap: 24px;
 }
 
+.gallery__container {
+  height: 70vh;
+  overflow:scroll;
+}
 .gallery__grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -521,7 +578,6 @@ onUnmounted(() => {
   font-style: italic;
 }
 
-/* ============ VIEWER ============ */
 .viewer {
   position: fixed;
   inset: 0;
