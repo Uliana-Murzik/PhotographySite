@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref, watch, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, RouterLink } from 'vue-router'
 import emailjs from '@emailjs/browser'
+import { vMaska } from 'maska/vue'
 
 interface Props {
   defaultSubject?: string
@@ -23,6 +24,7 @@ const form = reactive({
   phone: '',
   subject: '',
   message: '',
+  consent: false,
 })
 
 const isSending = ref(false)
@@ -98,6 +100,7 @@ const handleSubmit = async (event: Event): Promise<void> => {
       form.phone = ''
       form.subject = ''
       form.message = ''
+      form.consent = false
     }
   } catch (e) {
     sendError.value = 'Не удалось отправить. Попробуйте позже.'
@@ -115,7 +118,12 @@ const setSubject = (subject: string): void => {
   }
 }
 
-//для использования в родительском компоненте
+const phoneMask = { mask: '+7 (###) ###-##-##' }
+
+const isPhoneValid = (): boolean => {
+  return form.phone.length === 18
+}
+
 defineExpose({
   setSubject,
 })
@@ -133,39 +141,60 @@ defineExpose({
 
     <form v-else class="consultation__form" @submit="handleSubmit">
       <label class="consultation__label">
-        <span>Имя</span>
+        <span>Имя <span class="consultation__required">*</span></span>
         <input v-model="form.name" type="text" class="consultation__input" required />
       </label>
 
       <label class="consultation__label">
-        <span>Email</span>
-        <input v-model="form.email" type="email" class="consultation__input" required />
+        <span>Email <span class="consultation__optional">(необязательно)</span></span>
+        <input v-model="form.email" type="email" class="consultation__input" />
       </label>
 
       <label class="consultation__label">
-        <span>Телефон</span>
-        <input v-model="form.phone" type="tel" class="consultation__input" required />
+        <span>Телефон <span class="consultation__required">*</span></span>
+        <input 
+          v-model="form.phone" 
+          v-maska="phoneMask"
+          type="tel" 
+          class="consultation__input" 
+          placeholder="+7 (___) ___-__-__"
+          required 
+        />
       </label>
 
       <label class="consultation__label">
-        <span>Тема</span>
-        <input v-model="form.subject" type="text" class="consultation__input" required />
+        <span>Тема <span class="consultation__optional">(необязательно)</span></span>
+        <input v-model="form.subject" type="text" class="consultation__input" />
       </label>
 
       <label class="consultation__label">
-        <span>Сообщение</span>
+        <span>Сообщение <span class="consultation__optional">(необязательно)</span></span>
         <textarea
           v-model="form.message"
           class="consultation__textarea"
           rows="5"
-          required
         ></textarea>
+      </label>
+
+      <label class="consultation__checkbox-label">
+        <input
+          v-model="form.consent"
+          type="checkbox"
+          class="consultation__checkbox"
+          required
+        />
+        <span class="consultation__checkbox-text">
+          Я даю согласие на 
+          <RouterLink to="/consent" target="_blank">обработку персональных данных</RouterLink> 
+          и принимаю 
+          <RouterLink to="/privacy" target="_blank">политику конфиденциальности</RouterLink>
+        </span>
       </label>
 
       <button
         type="submit"
         class="consultation__submit"
-        :disabled="isSending || (preventMultipleSubmissions && formAlreadySent)"
+        :disabled="isSending || (preventMultipleSubmissions && formAlreadySent) || !form.consent || !form.name || !isPhoneValid()"
       >
         {{ isSending ? 'Отправка...' : 'Отправить' }}
       </button>
@@ -198,9 +227,20 @@ defineExpose({
   font-size: 15px;
 }
 
-.consultation__label span {
+.consultation__label > span {
   font-weight: 500;
   color: #333;
+}
+
+.consultation__required {
+  color: #dc2626;
+  font-weight: 400;
+}
+
+.consultation__optional {
+  color: #9ca3af;
+  font-weight: 400;
+  font-size: 13px;
 }
 
 .consultation__input,
@@ -222,6 +262,37 @@ defineExpose({
 .consultation__textarea {
   resize: vertical;
   min-height: 120px;
+}
+
+.consultation__checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.consultation__checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: #2563eb;
+  flex-shrink: 0;
+}
+
+.consultation__checkbox-text {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.consultation__checkbox-text a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.consultation__checkbox-text a:hover {
+  text-decoration: underline;
 }
 
 .consultation__submit {

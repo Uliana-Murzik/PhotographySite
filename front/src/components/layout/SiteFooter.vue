@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
+
 const scrollToTop = (): void => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -30,6 +32,14 @@ const socialLinks = [
         <a href="mailto:Anastasia.art.food@gmail.com" class="site-footer__email">
           Anastasia.art.food@gmail.com
         </a>
+        <nav class="site-footer__legal">
+          <RouterLink to="/privacy" class="site-footer__legal-link">
+            Политика конфиденциальности
+          </RouterLink>
+          <RouterLink to="/consent" class="site-footer__legal-link">
+            Согласие на обработку данных
+          </RouterLink>
+        </nav>
       </div>
 
       <nav class="site-footer__social" aria-label="Социальные сети">
@@ -113,6 +123,25 @@ const socialLinks = [
   text-decoration: underline;
 }
 
+.site-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 8px;
+}
+
+.site-footer__legal-link {
+  font-size: 13px;
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-footer__legal-link:hover {
+  color: #111827;
+  text-decoration: underline;
+}
+
 .site-footer__social {
   display: flex;
   gap: 12px;
@@ -177,6 +206,10 @@ const socialLinks = [
 
   .site-footer__left {
     align-items: center;
+  }
+
+  .site-footer__legal {
+    justify-content: center;
   }
 
   .site-footer__right {

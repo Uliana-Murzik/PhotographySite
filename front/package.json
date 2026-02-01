@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "maska": "^3.2.0",
     "pinia": "^3.0.3",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3"

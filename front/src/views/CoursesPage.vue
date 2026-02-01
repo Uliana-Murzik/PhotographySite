@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import ConsultationForm from '../components/ConsultationForm.vue'
 
 interface CourseModule {
   title: string
@@ -328,7 +329,6 @@ const courses: Course[] = [
   }
 ]
 
-// Состояние развёрнутых курсов
 const expandedCourses = ref<Set<number>>(new Set())
 
 const toggleCourse = (courseId: number) => {
@@ -341,6 +341,12 @@ const toggleCourse = (courseId: number) => {
 
 const isCourseExpanded = (courseId: number) => {
   return expandedCourses.value.has(courseId)
+}
+
+const consultationFormRef = ref<InstanceType<typeof ConsultationForm> | null>(null)
+
+const enrollCourse = (courseTitle: string): void => {
+  consultationFormRef.value?.setSubject(`Запись на курс: ${courseTitle}`)
 }
 </script>
 
@@ -386,7 +392,6 @@ const isCourseExpanded = (courseId: number) => {
           </ul>
         </div>
 
-        <!-- Кнопка показать/скрыть программу -->
         <button 
           class="course-card__toggle"
           :class="{ 'course-card__toggle--expanded': isCourseExpanded(course.id) }"
@@ -410,7 +415,6 @@ const isCourseExpanded = (courseId: number) => {
           </svg>
         </button>
 
-        <!-- Программа курса (дропдаун) -->
         <div 
           v-if="isCourseExpanded(course.id)" 
           class="course-card__modules"
@@ -432,10 +436,27 @@ const isCourseExpanded = (courseId: number) => {
           </div>
         </div>
 
-        <button class="course-card__button">
+        <button 
+          class="course-card__button"
+          type="button"
+          @click="enrollCourse(course.title)"
+        >
           Записаться на курс
         </button>
       </div>
+    </section>
+
+    <section class="courses__consultation">
+      <h2 class="courses__consultation-title">Остались вопросы?</h2>
+      <p class="courses__consultation-subtitle">
+        Напишите мне — я помогу выбрать подходящий курс и расскажу о формате обучения.
+      </p>
+
+      <ConsultationForm
+        ref="consultationFormRef"
+        form-id="courses-consultation-form"
+        :prevent-multiple-submissions="true"
+      />
     </section>
   </div>
 </template>
@@ -561,7 +582,6 @@ const isCourseExpanded = (courseId: number) => {
   color: #22c55e;
 }
 
-/* Toggle button */
 .course-card__toggle {
   display: flex;
   align-items: center;
@@ -589,7 +609,6 @@ const isCourseExpanded = (courseId: number) => {
   transform: rotate(180deg);
 }
 
-/* Modules dropdown */
 .course-card__modules {
   margin-top: 16px;
   padding-top: 24px;
@@ -662,7 +681,6 @@ const isCourseExpanded = (courseId: number) => {
   color: #9ca3af;
 }
 
-/* Button */
 .course-card__button {
   margin-top: 24px;
   padding: 14px 32px;
@@ -681,7 +699,29 @@ const isCourseExpanded = (courseId: number) => {
   transform: translateY(-1px);
 }
 
-/* Responsive */
+.courses__consultation {
+  max-width: 1100px;
+  margin: 0 auto 48px;
+  padding: 40px;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.courses__consultation-title {
+  font-size: 26px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+
+.courses__consultation-subtitle {
+  font-size: 17px;
+  color: #374151;
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
 @media (max-width: 768px) {
   .course-card {
     padding: 24px;
@@ -693,6 +733,12 @@ const isCourseExpanded = (courseId: number) => {
   
   .course-module {
     padding: 16px;
+  }
+
+  .courses__consultation {
+    margin-left: 24px;
+    margin-right: 24px;
+    padding: 24px;
   }
 }
 </style>

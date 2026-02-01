@@ -323,6 +323,20 @@ onUnmounted(() => {
     <div v-else-if="!allImages.length" class="page__empty">Пока здесь нет фотографий</div>
 
     <div v-else class="gallery">
+      <div class="gallery__categories">
+        <button
+          v-for="album in albumsWithImages"
+          :key="album.id"
+          class="gallery__category"
+          :class="{ 'gallery__category--active': activeAlbumId === album.id }"
+          @click="selectAlbum(album.id)"
+        >
+          <span class="gallery__category-name">{{ album.name }}</span>
+          <span class="gallery__category-count">( {{ (imagesByAlbum[album.id] || []).length }} )</span>
+        </button>
+      </div>
+
+      <div class="gallery__total">/{{ totalPhotos }} Фото</div>
       <div class="gallery__container" ref="galleryContainerRef">
         <div class="gallery__grid">
         <div 
@@ -347,23 +361,9 @@ onUnmounted(() => {
       </div>
       
 
-      <div class="gallery__categories">
-        <button
-          v-for="album in albumsWithImages"
-          :key="album.id"
-          class="gallery__category"
-          :class="{ 'gallery__category--active': activeAlbumId === album.id }"
-          @click="selectAlbum(album.id)"
-        >
-          <span class="gallery__category-name">{{ album.name }}</span>
-          <span class="gallery__category-count">( {{ (imagesByAlbum[album.id] || []).length }} )</span>
-        </button>
-      </div>
-
-      <div class="gallery__total">/{{ totalPhotos }}Photos</div>
+      
     </div>
 
-    <!-- VIEWER OVERLAY -->
     <Teleport to="body">
       <div v-if="viewerOpen" class="viewer" @click.self="closeViewer">
         <!-- Левая часть - категория -->
@@ -374,7 +374,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Центр - главное изображение -->
         <div class="viewer__main">
           <div class="viewer__main-canvas-wrap">
             <canvas 
@@ -383,7 +382,6 @@ onUnmounted(() => {
             ></canvas>
           </div>
           
-          <!-- Навигация -->
           <button 
             v-if="viewerCurrentIndex > 0"
             class="viewer__nav viewer__nav--prev" 
@@ -402,7 +400,6 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- Правая часть - миниатюры -->
         <div class="viewer__thumbs">
           <div 
             v-for="(img, index) in viewerImages" 
@@ -420,7 +417,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Кнопка закрыть -->
         <button class="viewer__close" @click="closeViewer" aria-label="Закрыть">
           ✕
         </button>
@@ -471,7 +467,6 @@ onUnmounted(() => {
   color: #777;
 }
 
-/* Gallery Grid */
 .gallery {
   display: flex;
   flex-direction: column;
@@ -523,7 +518,6 @@ onUnmounted(() => {
   height: 100%;
 }
 
-/* Categories */
 .gallery__categories {
   display: flex;
   flex-wrap: wrap;

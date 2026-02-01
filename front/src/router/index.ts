@@ -32,6 +32,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/ContactsPage.vue'),
   },
   {
+    path: '/privacy',
+    name: 'privacy',
+    component: () => import('../views/PrivacyPage.vue'),
+  },
+  {
+    path: '/consent',
+    name: 'consent',
+    component: () => import('../views/ConsentPage.vue'),
+  },
+  {
     // скрытая страница с админкой
     path: '/admin',
     name: 'admin',
