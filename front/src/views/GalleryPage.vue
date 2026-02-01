@@ -8,13 +8,9 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 const galleryStore = useGalleryStore()
 const { albumsWithImages, imagesByAlbum, images, isLoading, error } = storeToRefs(galleryStore)
 
-// Активный альбом (null = все активны)
 const activeAlbumId = ref<number | null>(null)
-
-// Общее количество фото
 const totalPhotos = computed(() => images.value.length)
 
-// Все изображения для отображения в сетке
 const allImages = computed(() => {
   const result: Array<{
     id: number
@@ -76,41 +72,34 @@ const scrollToAlbum = async (albumId: number | null) => {
   container.scrollTo({ top: sortedTargets[0].top, behavior: 'smooth' })
 }
 
-// Выбор альбома
 const selectAlbum = (albumId: number) => {
   const nextSelection = activeAlbumId.value === albumId ? null : albumId
   activeAlbumId.value = nextSelection
   scrollToAlbum(nextSelection)
 }
 
-// Проверка активности изображения
 const isImageActive = (albumId: number) => {
   return activeAlbumId.value === null || activeAlbumId.value === albumId
 }
 
-// ============ VIEWER STATE ============
 const viewerOpen = ref(false)
 const viewerAlbumId = ref<number | null>(null)
 const viewerCurrentIndex = ref(0)
 
-// Изображения текущего альбома для просмотра
 const viewerImages = computed(() => {
   if (!viewerAlbumId.value) return []
   return allImages.value.filter(img => img.albumId === viewerAlbumId.value)
 })
 
-// Текущее изображение
 const viewerCurrentImage = computed(() => {
   return viewerImages.value[viewerCurrentIndex.value] || null
 })
 
-// Название альбома
 const viewerAlbumName = computed(() => {
   const album = albumsWithImages.value.find(a => a.id === viewerAlbumId.value)
   return album?.name || ''
 })
 
-// Открыть просмотр
 const openViewer = (img: typeof allImages.value[0]) => {
   viewerAlbumId.value = img.albumId
   const albumImages = viewerImages.value
@@ -123,13 +112,11 @@ const openViewer = (img: typeof allImages.value[0]) => {
   })
 }
 
-// Закрыть просмотр
 const closeViewer = () => {
   viewerOpen.value = false
   document.body.style.overflow = ''
 }
 
-// Навигация
 const goToImage = (index: number) => {
   viewerCurrentIndex.value = index
   nextTick(() => drawMainCanvas())
@@ -149,7 +136,6 @@ const prevImage = () => {
   }
 }
 
-// Keyboard navigation
 const handleKeydown = (e: KeyboardEvent) => {
   if (!viewerOpen.value) return
   
@@ -158,7 +144,6 @@ const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevImage()
 }
 
-// ============ CANVAS DRAWING ============
 const canvasRefs = ref<Map<number, HTMLCanvasElement>>(new Map())
 const mainCanvasRef = ref<HTMLCanvasElement | null>(null)
 const thumbCanvasRefs = ref<Map<number, HTMLCanvasElement>>(new Map())
@@ -196,8 +181,6 @@ const drawImageOnCanvas = (canvas: HTMLCanvasElement, imgUrl: string, contain = 
     canvas.style.height = `${containerHeight}px`
 
     ctx.scale(dpr, dpr)
-    
-    // Очистить canvas
     ctx.clearRect(0, 0, containerWidth, containerHeight)
 
     const imgAspect = img.naturalWidth / img.naturalHeight
@@ -206,7 +189,6 @@ const drawImageOnCanvas = (canvas: HTMLCanvasElement, imgUrl: string, contain = 
     let drawWidth, drawHeight, drawX, drawY
 
     if (contain) {
-      // object-fit: contain
       if (imgAspect > containerAspect) {
         drawWidth = containerWidth
         drawHeight = containerWidth / imgAspect
@@ -219,7 +201,6 @@ const drawImageOnCanvas = (canvas: HTMLCanvasElement, imgUrl: string, contain = 
         drawY = 0
       }
     } else {
-      // object-fit: cover
       if (imgAspect > containerAspect) {
         drawHeight = containerHeight
         drawWidth = containerHeight * imgAspect
@@ -239,7 +220,6 @@ const drawImageOnCanvas = (canvas: HTMLCanvasElement, imgUrl: string, contain = 
   img.src = imgUrl
 }
 
-// Перерисовка сетки
 const redrawAllCanvases = async () => {
   await nextTick()
   allImages.value.forEach((img) => {
@@ -248,13 +228,11 @@ const redrawAllCanvases = async () => {
   })
 }
 
-// Рисование главного изображения в viewer
 const drawMainCanvas = () => {
   if (!mainCanvasRef.value || !viewerCurrentImage.value) return
   drawImageOnCanvas(mainCanvasRef.value, viewerCurrentImage.value.url, true)
 }
 
-// Рисование миниатюр в viewer
 const drawThumbCanvases = () => {
   viewerImages.value.forEach((img) => {
     const canvas = thumbCanvasRefs.value.get(img.id)
@@ -262,14 +240,12 @@ const drawThumbCanvases = () => {
   })
 }
 
-// Рисование всех canvas в viewer
 const drawViewerCanvases = async () => {
   await nextTick()
   drawMainCanvas()
   drawThumbCanvases()
 }
 
-// Установка первого альбома как активного
 watch(albumsWithImages, (albums) => {
   if (albums.length && activeAlbumId.value === null) {
     activeAlbumId.value = albums[0].id
@@ -289,12 +265,10 @@ watch(
   { immediate: true }
 )
 
-// Перерисовка при загрузке данных
 watch(allImages, () => {
   redrawAllCanvases()
 }, { deep: true })
 
-// Перерисовка при изменении текущего изображения
 watch(viewerCurrentIndex, () => {
   if (viewerOpen.value) drawMainCanvas()
 })
@@ -475,7 +449,7 @@ onUnmounted(() => {
 
 .gallery__container {
   height: 70vh;
-  overflow:scroll;
+  overflow: auto;
 }
 .gallery__grid {
   display: grid;
